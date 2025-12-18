@@ -1,9 +1,20 @@
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.ArrayList;
 class Node{
     int data;
     Node left;
     Node right;
     Node(int data){
         this.data = data;
+    }
+}
+class Pair{
+    Node node;
+    int level;
+    Pair(Node node, int level){
+        this.node = node;
+        this.level = level;
     }
 }
 public class BinaryTree {
@@ -51,6 +62,59 @@ public class BinaryTree {
         mirror(root.left);
         return isIdentical(root.left, root.right);
     }
+    public static boolean hasPathSum(Node root, int targetSum){
+        if(root==null){
+            if(targetSum == 0) return true;
+            else return false;
+        }
+        return hasPathSum(root.left, targetSum-root.data) || hasPathSum(root.right, targetSum-root.data);
+    }
+    public static void labelOrder(Node root){
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        while(q.size()>0){
+            Node front = q.remove();
+            System.out.print(front.data+" ");
+            if(front.left!=null) q.add(front.left);
+            if(front.right!=null) q.add(front.right);
+        }
+    }
+    public static void levelOrderLineWise(Node root){
+        Queue<Pair> q = new LinkedList<>();
+        int currLevel = 0;
+        q.add(new Pair(root, 0));
+        while(q.size()>0){
+            Pair front = q.remove();
+            // Node node = front.node;
+            // int level = front.level;
+            if(front.level != currLevel){
+                currLevel ++;
+                System.out.println();
+            }
+            System.out.print(front.node.data+" ");
+            if(front.node.left!=null) q.add(new Pair(front.node.left, front.level+1));
+            if(front.node.right!=null) q.add(new Pair(front.node.right, front.level+1));
+        }
+        System.out.println();
+    }
+    public static void dfs(Node root, ArrayList<Integer> arr, ArrayList<ArrayList<Integer>> ans){
+        if(root==null) return;
+        arr.add(root.data);
+        if(root.left==null && root.right==null){
+            ArrayList<Integer> list = new ArrayList<>();
+            list.addAll(arr);
+            ans.add(list);
+        }
+        dfs(root.left, arr, ans);
+        dfs(root.right, arr, ans);
+        arr.remove(arr.size()-1); // Backtracking
+    }
+    public static ArrayList<ArrayList<Integer>> paths(Node root){
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        ArrayList<Integer> arr = new ArrayList<>();
+        dfs(root, arr, ans);
+        return ans;
+    }
     public static void display(Node root){
         if(root == null) return;
         System.out.print(root.data+" ");
@@ -62,19 +126,26 @@ public class BinaryTree {
     public static void main(String[] args) {
         Node a = new Node(10);
         Node b = new Node(20);
-        Node c = new Node(20);
+        Node c = new Node(30);
         Node d = new Node(40);
         Node e = new Node(50);
-        Node f = new Node(50);
-        Node g = new Node(40);
+        Node f = new Node(60);
+        Node g = new Node(70);
         a.left = b;
         a.right = c;
         b.left = d;
         b.right = e;
         c.left = f;
         c.right = g;
-        display(a);
-        System.out.println(isSymmetric(a));
+        // display(a);
+        // System.out.println();
+        // labelOrder(a);
+        // System.out.println();
+        // levelOrderLineWise(a);
+        ArrayList<ArrayList<Integer>> res = paths(a);
+        System.out.println(res);
+        // System.out.println(hasPathSum(a, 100));
+        // System.out.println(isSymmetric(a));
         // System.out.println();
         // System.out.println(size(a));
         // System.out.println(sum(a));
